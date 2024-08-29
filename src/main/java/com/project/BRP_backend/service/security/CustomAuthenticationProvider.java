@@ -28,7 +28,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         var userAuthentication = (ApiAuthenticationToken) authentication;
         var userDetailsOptional = userRepository.findByEmail(userAuthentication.getEmail());
         if (userDetailsOptional.isPresent()) {
-            var userDetails =(UserDetails) userDetailsOptional.get();
+            var userDetails = userDetailsOptional.get();
             validAccount.accept(userDetails);
             if (passwordEncoder.matches(userAuthentication.getPassword(),userDetails.getPassword())) {
                 return ApiAuthenticationToken.authenticated(userDetails, userDetails.getAuthorities());
