@@ -1,0 +1,7 @@
+DB_HOST: localhost
+DB_PORT: 27017
+DB_DATABASE: brp_db
+DB_PASSWORD: june12003
+DB_USER: divjazz
+JWT_EXPIRATION: 4000000
+JWT_SECRET: My name is Divine, I am a software engineer. I am based in Nigeria at the moment, but i really plan on leaving the country

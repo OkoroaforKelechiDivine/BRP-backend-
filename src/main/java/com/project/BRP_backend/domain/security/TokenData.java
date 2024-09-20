@@ -1,4 +1,4 @@
-package com.project.BRP_backend.model.security;
+package com.project.BRP_backend.domain.security;
 
 import io.jsonwebtoken.Claims;
 import lombok.Builder;

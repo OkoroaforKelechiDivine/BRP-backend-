@@ -1,8 +1,8 @@
 package com.project.BRP_backend.service.security.jwt;
 
 import com.project.BRP_backend.enums.security.TokenType;
-import com.project.BRP_backend.model.security.Token;
-import com.project.BRP_backend.model.security.TokenData;
+import com.project.BRP_backend.domain.security.Token;
+import com.project.BRP_backend.domain.security.TokenData;
 import com.project.BRP_backend.model.user.User;
 import com.project.BRP_backend.service.user.UserService;
 import io.jsonwebtoken.Claims;
@@ -19,7 +19,6 @@ import org.apache.logging.log4j.util.TriConsumer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;

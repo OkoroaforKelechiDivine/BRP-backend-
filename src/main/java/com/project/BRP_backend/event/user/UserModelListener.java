@@ -18,7 +18,7 @@ public class UserModelListener extends AbstractMongoEventListener<User> {
     SequenceGeneratorService generatorService;
     @Override
     public void onBeforeConvert(BeforeConvertEvent<User> event){
-        if (event.getSource().getId().intValue() < ) {
+        if (event.getSource().getId().intValue() < 1) {
             event.getSource().setId(BigInteger.valueOf(generatorService.generateSequence(User.SEQUENCE_NAME)));
         }
     }

@@ -1,12 +1,10 @@
 package com.project.BRP_backend.service.security.jwt;
 
-import com.project.BRP_backend.constant.security.Constant;
 import com.project.BRP_backend.domain.security.ApiAuthenticationToken;
-import com.project.BRP_backend.enums.security.TokenType;
 import com.project.BRP_backend.exception.ApiAuthenticationException;
 import com.project.BRP_backend.exception.InvalidTokenException;
 import com.project.BRP_backend.exception.TokenNotFoundException;
-import com.project.BRP_backend.model.security.TokenData;
+import com.project.BRP_backend.domain.security.TokenData;
 import com.project.BRP_backend.service.user.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -15,17 +13,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.security.sasl.AuthenticationException;
 import java.io.IOException;
 import java.util.Optional;
 
 import static com.project.BRP_backend.constant.security.Constant.AUTHORIZATION;
-import static com.project.BRP_backend.enums.security.TokenType.*;
+import static com.project.BRP_backend.enums.security.TokenType.ACCESS;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -35,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if (!request.getRequestURI().matches("/api/v1/user/(login|logout)") && !request.getRequestURI().matches("api/v1/user/(create|register)")) {
+        if (!request.getRequestURI().matches("/api/v1/user/(login|logout|register|create)") ) {
             final Optional<String> authorizationAccessToken = jwtService.extractToken(request, ACCESS.getValue());
             final String authorizationHeader = request.getHeader(AUTHORIZATION);
             String userId = null;
