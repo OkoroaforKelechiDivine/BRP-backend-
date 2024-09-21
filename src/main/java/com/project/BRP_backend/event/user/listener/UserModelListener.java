@@ -1,4 +1,4 @@
-package com.project.BRP_backend.event.user;
+package com.project.BRP_backend.event.user.listener;
 
 import com.project.BRP_backend.model.user.User;
 import com.project.BRP_backend.service.shared.SequenceGeneratorService;

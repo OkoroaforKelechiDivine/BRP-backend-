@@ -5,15 +5,19 @@ import com.project.BRP_backend.domain.cache.CacheStore;
 import com.project.BRP_backend.dto.user.UserDTO;
 import com.project.BRP_backend.enums.security.LoginType;
 import com.project.BRP_backend.enums.security.Role;
+import com.project.BRP_backend.enums.user.UserEventType;
+import com.project.BRP_backend.event.user.UserEvent;
 import com.project.BRP_backend.exception.UserNotFoundException;
+import com.project.BRP_backend.model.security.ConfirmationToken;
 import com.project.BRP_backend.model.user.User;
 import com.project.BRP_backend.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final CacheStore<String, Integer> loginCache;
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public Optional<UserDTO> getUserDTOByEmail(String email) {
         return Optional.of(userRepository
@@ -46,7 +51,7 @@ public class UserService {
     }
 
     public UserDTO registerUser(UserDTO userDTO){
-        if (isUserNotExistsByEmail(userDTO.email()))
+        if (isUserExistsByEmail(userDTO.email()))
             return null;
         User user = new User(
                 UUID.randomUUID().toString(),
@@ -60,6 +65,13 @@ public class UserService {
         );
 
         user = userRepository.save(user);
+
+        //Code that uses the UserEvent to send Email
+        ConfirmationToken confirmationToken = new ConfirmationToken(user.getUserId(), UUID.randomUUID().toString());
+        UserEvent userEvent = new UserEvent(user, UserEventType.REGISTRATION, Map.of("key", confirmationToken.getKey()));
+        applicationEventPublisher.publishEvent(userEvent);
+
+
         return new UserDTO(user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
@@ -114,11 +126,11 @@ public class UserService {
         }
         userRepository.save(user);
     }
-    public boolean isUserNotExistsByUserId(String id) {
-        return !userRepository.existsByUserId(id);
+    public boolean isUserExistsByUserId(String id) {
+        return userRepository.existsByUserId(id);
     }
-    public boolean isUserNotExistsByEmail(String email) {
-        return !userRepository.existsByEmail(email);
+    public boolean isUserExistsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 
 }
