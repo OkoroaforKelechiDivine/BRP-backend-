@@ -1,0 +1,7 @@
+DB_HOST: cluster0.zx17wpd.mongodb.net
+DB_PORT: 27017
+DB_DATABASE: BRP
+DB_PASSWORD: BRP
+DB_USER: okoroaforkelechi123
+DB_CONF: /?retryWrites=true&w=majority&appName=Cluster0
+DB_CONNECTION_SCHEME: mongodb+srv
