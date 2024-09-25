@@ -1,0 +1,17 @@
+DB_HOST: localhost
+DB_CONNECTION_SCHEME: mongodb
+DB_PORT: 27017
+DB_DATABASE: brp_db
+DB_PASSWORD: june12003
+DB_USER: divjazz
+DB_CONF: ""
+
+JWT_EXPIRATION: 4000000
+JWT_SECRET: My name is Divine, I am a software engineer. I am based in Nigeria at the moment, but i really plan on leaving the country
+
+EMAIL_HOST: smtp.gmail.com
+EMAIL_PORT: 465
+EMAIL_ID: divjazz9@gmail.com
+EMAIL_PASSWORD: rygvxqgbefteixml
+VERIFY_HOST: localhost
+VERIFY_PORT: 3000

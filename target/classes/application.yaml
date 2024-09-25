@@ -1,12 +1,46 @@
 
 spring:
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+      close-closeable: true
+      flush-after-write-value: true
+      write-date-keys-as-timestamps: false
+
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
+
+  mail:
+    host: ${EMAIL_HOST}
+    port: ${EMAIL_PORT}
+    username: ${EMAIL_ID}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        mime:
+          charset: UTF
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+    verify:
+      host: ${VERIFY_HOST}
+      port: ${VERIFY_PORT}
+
   application:
     name: BRP-backend
   data:
     mongodb:
-      host: ${MONGO_DB_HOST}
-      port: ${MONGO_DB_PORT:22467}
-      username: ${MONGO_DB_USERNAME}
-      password: ${MONGO_DB_PASSWORD}
-      database: ${MONGO_DB_DATABASE}
-      uri: ${MONGO_DB_URI}
+      authentication-database: admin
+      uri: ${DB_CONNECTION_SCHEME}://${DB_USER}:${DB_PASSWORD}@${DB_HOST}${DB_CONF}
+      database: ${DB_DATABASE}
+      port: ${DB_PORT}
+  profiles:
+    active: ${ACTIVE_PROFILE}
+server:
+  port: 9090
+
+jwt:
+  expiration: ${JWT_EXPIRATION}
+  secret: ${JWT_SECRET}

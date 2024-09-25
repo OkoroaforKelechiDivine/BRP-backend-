@@ -1,8 +1,8 @@
 package com.project.BRP_backend.service.security.jwt;
 
 import com.project.BRP_backend.enums.security.TokenType;
-import com.project.BRP_backend.model.security.Token;
-import com.project.BRP_backend.model.security.TokenData;
+import com.project.BRP_backend.domain.security.Token;
+import com.project.BRP_backend.domain.security.TokenData;
 import com.project.BRP_backend.model.user.User;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
