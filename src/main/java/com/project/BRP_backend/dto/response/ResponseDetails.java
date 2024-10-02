@@ -1,4 +1,4 @@
-package com.project.BRP_backend.dto.user.response;
+package com.project.BRP_backend.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

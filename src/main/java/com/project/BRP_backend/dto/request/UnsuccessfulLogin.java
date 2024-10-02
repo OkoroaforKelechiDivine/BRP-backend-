@@ -1,4 +1,4 @@
-package com.project.BRP_backend.dto.user.request;
+package com.project.BRP_backend.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
