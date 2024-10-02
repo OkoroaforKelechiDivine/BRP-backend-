@@ -1,104 +1,48 @@
 package com.project.BRP_backend.model.user;
 
-import com.project.BRP_backend.domain.user.Address;
-import com.project.BRP_backend.domain.user.Audit;
-import com.project.BRP_backend.enums.security.Role;
-import com.project.BRP_backend.enums.user.UserType;
-import lombok.Getter;
-import lombok.Setter;
+import com.project.BRP_backend.model.constants.Gender;
+import com.project.BRP_backend.model.constants.Role;
+import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.math.BigInteger;
-import java.util.Collection;
-
-@Document("users")
-@Getter
-public class User implements UserDetails {
-
-    @Transient
-    public static final String SEQUENCE_NAME = "users_sequence";
+//@Getter
+//@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class User{
 
     @Id
-    @Setter
-    private BigInteger id;
-    @Indexed
-    private final String userId;
-    @Indexed
-    private final String email;
-    private final String firstName;
-    private final String lastName;
-    private final UserType userType;
-    private final String phoneNumber;
-    private final Address address;
-    private final UserCredentials userCredentials;
-    private final Role role;
-    private final Audit audit;
-    @Setter
-    private boolean accountExpired;
-    @Setter
-    private boolean accountLocked;
-    @Setter
-    private boolean credentialsExpired;
-    @Setter
-    private boolean isEnabled;
-    @Setter
-    private int loginAttempts;
+    private String id;
 
-    public User(String userId, String email, String firstName, String lastName, String password, Role role,Address address, String phoneNumber) {
-        this.id = BigInteger.ZERO;
-        this.userId = userId;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.userType = UserType.valueOf(role.toString());
-        this.userCredentials = new UserCredentials(password);
-        this.address = address;
-        this.phoneNumber = phoneNumber;
-        accountExpired = false;
-        accountLocked = false;
-        credentialsExpired = false;
-        isEnabled = false;
-        this.audit = new Audit(userId);
-        this.role = role;
-    }
+    private String firstName;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
+    private String lastName;
 
-    @Override
-    public String getPassword() {
-        return userCredentials.getPassword();
-    }
+    private Role userType;
 
-    @Override
-    public String getUsername() {
+    private String phoneNumber;
+
+    private String email;
+
+    private String password;
+
+    private String Address;
+
+    private Gender gender;
+
+    private Role role;
+
+    private Boolean isVerified;
+
+    public String getEmail() {
         return email;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return !accountExpired;
+    public String getPassword() {
+        return password;
     }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return !accountLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return !credentialsExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return isEnabled;
+    public Role getRole() {
+        return role;
     }
 }
