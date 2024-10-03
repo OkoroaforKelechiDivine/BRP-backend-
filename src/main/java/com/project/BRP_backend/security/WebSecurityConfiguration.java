@@ -1,8 +1,10 @@
 package com.project.BRP_backend.security;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,12 +22,13 @@ import java.util.Collections;
 import java.util.List;
 
 @EnableWebSecurity
+@AllArgsConstructor
+@Configuration
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
+    //Field Injection not recommended ... easier to use lombok and constructor injection
     private UserDetailServiceImpl userDetailsService;
 
-    @Autowired
     private ApplicationContext context;
 
     @Override
@@ -33,7 +36,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.cors()
                 .configurationSource(corsConfigurationSource()).and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/auths/create").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/user/create").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(), context))
