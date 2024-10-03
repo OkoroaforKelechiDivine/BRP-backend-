@@ -39,7 +39,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager, ApplicationContext context) {
         this.authenticationManager = authenticationManager;
         repository = context.getBean(UserRepository.class);
-        setFilterProcessesUrl("/api/auths/login");
+        setFilterProcessesUrl("/api/user/login");
     }
 
     @Override
