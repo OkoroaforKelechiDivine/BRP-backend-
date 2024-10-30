@@ -3,7 +3,7 @@ package com.project.BRP_backend.dto.request;
 import lombok.Data;
 
 @Data
-public class UserRegistrationRequest {
+public class AdminRegistrationRequest {
     private final String firstName;
     private final String lastName;
     private final String phoneNumber;
@@ -11,5 +11,4 @@ public class UserRegistrationRequest {
     private final String password;
     private final String gender;
     private final String address;
-
 }

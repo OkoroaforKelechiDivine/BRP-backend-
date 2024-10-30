@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -16,4 +18,12 @@ public class ResponseDetails {
     private String message;
 
     private String status;
+    private Map<?,?> data;
+
+    public ResponseDetails(LocalDateTime timestamp, String message, String status) {
+        this.timestamp = timestamp;
+        this.message = message;
+        this.status = status;
+        data = Collections.emptyMap();
+    }
 }

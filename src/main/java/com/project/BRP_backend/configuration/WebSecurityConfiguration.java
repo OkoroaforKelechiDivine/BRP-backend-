@@ -1,5 +1,8 @@
-package com.project.BRP_backend.security;
+package com.project.BRP_backend.configuration;
 
+import com.project.BRP_backend.security.JWTAuthenticationFilter;
+import com.project.BRP_backend.security.JWTAuthorizationFilter;
+import com.project.BRP_backend.security.UserDetailServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
