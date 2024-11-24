@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Service
@@ -21,7 +22,7 @@ public class ProductService {
     public ResponseDetails createProduct(ProductDTO productDTO) {
         Product product = Product.builder()
                 .name(productDTO.getName())
-                .price(BigDecimal.valueOf(Double.parseDouble(productDTO.getPrice())))
+                .price(Integer.parseInt(productDTO.getPrice()))
                 .productImageUrls(productDTO.getProductImageUrls())
                 .description(productDTO.getDescription())
                 .build();
@@ -39,7 +40,7 @@ public class ProductService {
     public ResponseDetails updateProduct(String id, ProductDTO productDTO){
         Product product = Product.builder()
                 .name(productDTO.getName())
-                .price(BigDecimal.valueOf(Double.parseDouble(productDTO.getPrice())))
+                .price(Integer.parseInt(productDTO.getPrice()))
                 .productImageUrls(productDTO.getProductImageUrls())
                 .description(productDTO.getDescription())
                 .build();

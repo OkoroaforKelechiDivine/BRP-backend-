@@ -20,11 +20,11 @@ public class Product {
     private String id;
     private String name;
     private String description;
-    private BigDecimal price;
+    private int price;
     private List<String> productImageUrls;
     private int rating;
     private List<Review> reviews;
-    private BigDecimal quantity;
+    private int quantity;
 
 
     public void addProductImageUrl(String imageUrl) {
@@ -38,16 +38,16 @@ public class Product {
 
         Product product = (Product) o;
 
+        if (price != product.price) return false;
         if (!Objects.equals(name, product.name)) return false;
-        if (!Objects.equals(description, product.description)) return false;
-        return Objects.equals(price, product.price);
+        return Objects.equals(description, product.description);
     }
 
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (price != null ? price.hashCode() : 0);
+        result = 31 * result + price;
         return result;
     }
 }

@@ -1,6 +1,6 @@
 package com.project.BRP_backend.controller;
 
-import com.project.BRP_backend.domain.ProductFilter;
+import com.project.BRP_backend.domain.product.ProductFilter;
 import com.project.BRP_backend.dto.request.product.ProductDTO;
 import com.project.BRP_backend.dto.request.product.ProductUpdateRequest;
 import com.project.BRP_backend.dto.response.ResponseDetails;

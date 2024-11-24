@@ -1,10 +1,13 @@
 package com.project.BRP_backend.model.user;
 
+import com.project.BRP_backend.domain.product.ProductPurchaseHistory;
 import com.project.BRP_backend.model.constants.Gender;
 import com.project.BRP_backend.model.constants.Role;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,5 +37,7 @@ public class User{
     private Role role;
 
     private Boolean isVerified;
+
+    private List<ProductPurchaseHistory> productPurchaseHistories;
 
 }

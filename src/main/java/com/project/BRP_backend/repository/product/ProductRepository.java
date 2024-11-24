@@ -9,6 +9,6 @@ import java.math.BigDecimal;
 @Repository
 public interface ProductRepository extends MongoRepository<Product, String> {
 
-    public boolean existsByPriceAndDescriptionAndName(BigDecimal price, String description, String name);
+    public boolean existsByPriceAndDescriptionAndName(int price, String description, String name);
 
 }

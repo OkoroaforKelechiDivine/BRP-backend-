@@ -1,4 +1,4 @@
-package com.project.BRP_backend.domain;
+package com.project.BRP_backend.domain.product;
 
 import lombok.Data;
 
