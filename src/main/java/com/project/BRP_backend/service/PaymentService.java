@@ -11,7 +11,6 @@ import com.project.BRP_backend.model.user.User;
 import com.project.BRP_backend.repository.payment.PaymentRepository;
 import com.project.BRP_backend.repository.product.ProductRepository;
 import com.project.BRP_backend.repository.user.UserRepository;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -57,7 +56,6 @@ public class PaymentService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private User user;
-    @Qualifier("webApplicationContext")
     private final ResourceLoader resourceLoader;
 
     public PaymentService(PaymentRepository paymentRepository,

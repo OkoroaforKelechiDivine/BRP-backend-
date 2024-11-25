@@ -24,6 +24,6 @@ public class ResponseDetails {
         this.timestamp = timestamp;
         this.message = message;
         this.status = status;
-        data = Collections.emptyMap();
+        data = Map.of();
     }
 }

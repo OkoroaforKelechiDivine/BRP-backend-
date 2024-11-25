@@ -4,12 +4,16 @@ import com.project.BRP_backend.dto.request.AdminRegistrationRequest;
 import com.project.BRP_backend.dto.request.UserRegistrationRequest;
 import com.project.BRP_backend.dto.response.ResponseDetails;
 import com.project.BRP_backend.dto.response.UserDetails;
+import com.project.BRP_backend.event.EventType;
+import com.project.BRP_backend.event.UserEvent;
 import com.project.BRP_backend.exception.AppException;
 import com.project.BRP_backend.model.constants.Gender;
 import com.project.BRP_backend.model.constants.Role;
 import com.project.BRP_backend.model.user.User;
 import com.project.BRP_backend.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,12 +33,13 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public ResponseDetails createUser(UserRegistrationRequest registrationRequest) {
         if (isUserExistsByPhoneNumber(registrationRequest.getPhoneNumber())) {
             return new ResponseDetails(LocalDateTime.now(), "User with phone number " + registrationRequest.getPhoneNumber() + " already exists", HttpStatus.OK.toString());
         }
-        createUser(registrationRequest.getAddress(),
+        var user = createUser(registrationRequest.getAddress(),
                 registrationRequest.getEmail(),
                 registrationRequest.getFirstName(),
                 registrationRequest.getLastName(),
@@ -42,10 +47,11 @@ public class UserService {
                 registrationRequest.getPhoneNumber(),
                 "CLIENT",
                 registrationRequest.getPassword());
+        UserEvent userEvent = new UserEvent(user, EventType.REGISTRATION, Map.of("OTP", ""));
+        applicationEventPublisher.publishEvent(userEvent);
         return new ResponseDetails(LocalDateTime.now(), "Registration Successful", HttpStatus.CREATED.toString());
     }
-
-    private void createUser(String address, String email, String firstName, String lastName, String gender, String phoneNumber, String userType, String password) {
+    private User createUser(String address, String email, String firstName, String lastName, String gender, String phoneNumber, String userType, String password) {
         User user = User.builder()
                 .address(address)
                 .email(email)
@@ -57,7 +63,8 @@ public class UserService {
                 .password(passwordEncoder.encode(password))
                 .isVerified(false) // Should this be true by default?...
                 .build();
-        userRepository.save(user);
+        return userRepository.save(user);
+
     }
 
     public ResponseDetails createAdmin(AdminRegistrationRequest adminRegistrationRequest) {
@@ -130,5 +137,9 @@ public class UserService {
                 .collect(Collectors.toSet());
         return new ResponseDetails(LocalDateTime.now(), "Successful", HttpStatus.OK.toString(), Map.of("clients",clients));
 
+    }
+
+    public void updateUser(User user) {
+        userRepository.save(user);
     }
 }

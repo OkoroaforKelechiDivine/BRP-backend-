@@ -5,12 +5,15 @@ import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SMSService {
+
     private final SMSConfiguration smsConfiguration;
     @Async
     public void sendMessage(String smsMessage, String recipientNo) {
@@ -19,6 +22,7 @@ public class SMSService {
                 new PhoneNumber(smsConfiguration.getPhone_Number()),
                 smsMessage)
                 .create();
+        log.info("Sms message sent successfully");
         //Some logging...
 
     }
