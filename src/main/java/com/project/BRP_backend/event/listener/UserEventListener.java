@@ -29,7 +29,7 @@ public class UserEventListener {
             }
             break;
             case REGISTRATION:{
-                var otp = generateOTP();
+                var otp = (String) userEvent.getData().get("OTP");
                 smsService.sendMessage(generateOTPMessage(userEvent.getUser().getFirstName(),otp),userEvent.getUser().getPhoneNumber());
                 var oneTimePassword = new OneTimePassword();
                 oneTimePasswordService.saveOneTimePassword(oneTimePassword);
@@ -49,10 +49,6 @@ public class UserEventListener {
 
     private String generateOTPMessage(String firstName, String OTP) {
         return String.format("Hello, %s your One-Time-Password is %s.%nPlease don't share this with anyone", firstName,OTP);
-    }
-    private String generateOTP() {
-        Random random = new Random();
-        return String.valueOf(random.nextInt(1000000));
     }
 
 }

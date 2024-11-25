@@ -1,5 +1,6 @@
 package com.project.BRP_backend.service;
 
+import com.project.BRP_backend.domain.OTPGenerator;
 import com.project.BRP_backend.dto.request.AdminRegistrationRequest;
 import com.project.BRP_backend.dto.request.UserRegistrationRequest;
 import com.project.BRP_backend.dto.response.ResponseDetails;
@@ -47,7 +48,8 @@ public class UserService {
                 registrationRequest.getPhoneNumber(),
                 "CLIENT",
                 registrationRequest.getPassword());
-        UserEvent userEvent = new UserEvent(user, EventType.REGISTRATION, Map.of("OTP", ""));
+        var otp = OTPGenerator.generateOTP();
+        UserEvent userEvent = new UserEvent(user, EventType.REGISTRATION, Map.of("OTP", otp));
         applicationEventPublisher.publishEvent(userEvent);
         return new ResponseDetails(LocalDateTime.now(), "Registration Successful", HttpStatus.CREATED.toString());
     }
