@@ -90,17 +90,17 @@ public class PaymentService {
                         .orElseThrow(() -> new AppException("Product doesn't exist")))
                 .collect(Collectors.toList());
 
-        int amount = cart.getProductAndQuantityList()
+        int amountInBaseUnit = cart.getProductAndQuantityList()
                 .parallelStream()
                 .map(productAndQuantity ->
                     productRepository.findById(productAndQuantity.getProductId())
                             .orElseThrow(() -> new AppException("Product doesn't exist"))
-                            .getPrice() * productAndQuantity.getQuantity()
+                            .getPrice() * 100 * productAndQuantity.getQuantity()
                 ).reduce(0, Integer::sum);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             InitializeTransaction initializeTransaction = InitializeTransaction.builder()
-                    .amount(String.valueOf(amount))
+                    .amount(String.valueOf(amountInBaseUnit))
                     .email(authentication.getName())
                     .reference(cart.getId())
                     .callback_url("") //TODO: set callback url
@@ -123,7 +123,7 @@ public class PaymentService {
             data = initializeTransactionResponse.getData();
             Payment payment = Payment.builder()
                     .paymentStatus(PaymentStatus.PENDING)
-                    .totalPaymentAmount(amount)
+                    .totalPaymentAmount(amountInBaseUnit)
                     .products(products)
                     .userId(user.getId())
                     .build();
