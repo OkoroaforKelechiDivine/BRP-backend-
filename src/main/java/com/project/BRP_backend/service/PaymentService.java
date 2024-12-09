@@ -3,21 +3,24 @@ package com.project.BRP_backend.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.BRP_backend.domain.payment.*;
 import com.project.BRP_backend.dto.response.ResponseDetails;
+import com.project.BRP_backend.event.EventType;
+import com.project.BRP_backend.event.UserEvent;
 import com.project.BRP_backend.exception.AppException;
 import com.project.BRP_backend.model.constants.PaymentStatus;
 import com.project.BRP_backend.model.payment.Payment;
 import com.project.BRP_backend.model.product.Product;
-import com.project.BRP_backend.model.user.User;
 import com.project.BRP_backend.repository.payment.PaymentRepository;
 import com.project.BRP_backend.repository.product.ProductRepository;
 import com.project.BRP_backend.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -55,8 +58,8 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
-    private User user;
     private final ResourceLoader resourceLoader;
+    private final ApplicationEventPublisher eventPublisher;
 
     public PaymentService(PaymentRepository paymentRepository,
                           ProductRepository productRepository,
@@ -64,7 +67,7 @@ public class PaymentService {
                           @Qualifier("webApplicationContext") ResourceLoader resourceLoader,
                           @Value("${payment.api.key}") String payment_api_key,
                           @Value("${server.ssl.key-store-password}") String keyStorePassword,
-                          @Value("${server.ssl.trust-store-password}") String trustStorePassword) throws Exception {
+                          @Value("${server.ssl.trust-store-password}") String trustStorePassword, ApplicationEventPublisher eventPublisher) throws Exception {
         this.paymentRepository = paymentRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
@@ -72,6 +75,7 @@ public class PaymentService {
         this.payment_api_key = payment_api_key;
         this.keyStorePassword = keyStorePassword;
         this.trustStorePassword = trustStorePassword;
+        this.eventPublisher = eventPublisher;
         sslContext = configureSSL();
     }
 
@@ -81,9 +85,9 @@ public class PaymentService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String paymentId = "";
         if (authentication == null || !authentication.isAuthenticated()) {
-            return new ResponseDetails(LocalDateTime.now(), "Not Authenticated", HttpStatus.EXPECTATION_FAILED.toString());
+            return new ResponseDetails(LocalDateTime.now(), "Not Authenticated", HttpStatus.UNAUTHORIZED.toString());
         }
-        user = userRepository.findByEmail(authentication.getName());
+        UserDetails user = getCurrentUser();
         List<Product> products = cart.getProductAndQuantityList()
                 .parallelStream()
                 .map(productAndQuantity -> productRepository.findById(productAndQuantity.getProductId())
@@ -103,7 +107,7 @@ public class PaymentService {
                     .amount(String.valueOf(amountInBaseUnit))
                     .email(authentication.getName())
                     .reference(cart.getId())
-                    .callback_url("") //TODO: set callback url
+                    .currency("NGN")
                     .build();
 
             HttpRequest request = HttpRequest.newBuilder()
@@ -121,24 +125,38 @@ public class PaymentService {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             InitializeTransactionResponse initializeTransactionResponse = objectMapper.readValue(response.body(), InitializeTransactionResponse.class);
             data = initializeTransactionResponse.getData();
-            Payment payment = Payment.builder()
-                    .paymentStatus(PaymentStatus.PENDING)
-                    .totalPaymentAmount(amountInBaseUnit)
-                    .products(products)
-                    .userId(user.getId())
-                    .build();
-            payment = paymentRepository.save(payment);
-            paymentId = payment.getId();
+            if (initializeTransactionResponse.getStatus().equals("true")) {
+                var appUser = userRepository.findByEmail(user.getUsername());
+                Payment payment = Payment.builder()
+                        .paymentStatus(PaymentStatus.PENDING)
+                        .totalPaymentAmount(amountInBaseUnit)
+                        .products(products)
+                        .userId(appUser.getId())
+                        .build();
+                payment = paymentRepository.save(payment);
+                paymentId = payment.getId();
+                UserEvent userEvent = new UserEvent(appUser, EventType.PAYMENT_INITIALIZED,Map.of("payment_id", paymentId));
+                eventPublisher.publishEvent(userEvent);
+                return new ResponseDetails(LocalDateTime.now(), "Payment Initialization Successful", HttpStatus.OK.toString(), Map.of("data",data, "payment_id",paymentId));
+            }
+            return new ResponseDetails(LocalDateTime.now(), "Payment Initialization Failed, Please try again", "failed", Map.of());
+
 
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new AppException(e.getMessage());
         }
 
-        return new ResponseDetails(LocalDateTime.now(), "Payment Successful", HttpStatus.OK.toString(), Map.of("data",data, "payment_id",paymentId));
+
     }
 
     public ResponseDetails verifyPayment(String reference, String paymentId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new ResponseDetails(LocalDateTime.now(), "Not Authenticated", HttpStatus.UNAUTHORIZED.toString());
+        }
+        UserDetails user = getCurrentUser();
         VerifyTransactionData data = null;
+        Payment payment = paymentRepository.findById(paymentId).orElseThrow(() -> new AppException("Payment not found"));
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             HttpRequest request = HttpRequest.newBuilder()
@@ -154,15 +172,31 @@ public class PaymentService {
             HttpResponse<String> response  = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             VerifyTransactionResponse verifyTransactionResponse = objectMapper.convertValue(response, VerifyTransactionResponse.class);
             data = verifyTransactionResponse.getData();
-        } catch (URISyntaxException | IOException | InterruptedException e) {
-            throw new AppException(e.getMessage());
+            if (data.getStatus().equals("success")) {
+                var appUser = userRepository.findByEmail(user.getUsername());
+                payment.setPaymentStatus(PaymentStatus.SUCCESS);
+                UserEvent userEvent = new UserEvent(appUser, EventType.PAYMENT_SUCCESS,Map.of("payment_id", paymentId));
+                eventPublisher.publishEvent(userEvent);
+            } else if (data.getStatus().equals("failed")) {
+                var appUser = userRepository.findByEmail(user.getUsername());
+                payment.setPaymentStatus(PaymentStatus.FAILED);
+                UserEvent userEvent = new UserEvent(appUser, EventType.PAYMENT_FAILED,Map.of("payment_id", paymentId));
+                eventPublisher.publishEvent(userEvent);
+            }
+            return new ResponseDetails(LocalDateTime.now(), "Verification", HttpStatus.OK.toString(), Map.of("data", data));
+
+        } catch (URISyntaxException | IOException | InterruptedException | AppException e) {
+            if (e instanceof AppException ) {
+                return new ResponseDetails(LocalDateTime.now(), e.getMessage(), "unsuccessful", Map.of());
+            }
+            return new ResponseDetails(LocalDateTime.now(), e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.toString(), Map.of());
         }
-        return new ResponseDetails(LocalDateTime.now(), "Verification", HttpStatus.OK.toString(), Map.of("data", data));
+
     }
 
     private SSLContext configureSSL() throws Exception{
         Resource keystoreResource = resourceLoader.getResource("classpath:keystore.jks");
-        Resource truststoreResource = resourceLoader.getResource("classpath:keystore.jks");
+        Resource truststoreResource = resourceLoader.getResource("classpath:truststore.jks");
 
         Path keystorePath = keystoreResource.getFile().toPath();
         Path truststorePath = truststoreResource.getFile().toPath();
@@ -182,5 +216,10 @@ public class PaymentService {
         SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
         return sslContext;
+    }
+
+    private UserDetails getCurrentUser() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (UserDetails) authentication.getPrincipal();
     }
 }

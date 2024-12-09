@@ -11,14 +11,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
 @Document
+@Builder
 @Setter
 @Getter
-@Builder
 public class Payment {
     @Id
     private final String id;
     private final String userId;
-    private final PaymentStatus paymentStatus;
+    private PaymentStatus paymentStatus;
     private final List<Product> products;
     private final int totalPaymentAmount;
+
+
 }

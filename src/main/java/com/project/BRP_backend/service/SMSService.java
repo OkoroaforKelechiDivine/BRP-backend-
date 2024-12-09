@@ -23,7 +23,5 @@ public class SMSService {
                 smsMessage)
                 .create();
         log.info("Sms message sent successfully");
-        //Some logging...
-
     }
 }

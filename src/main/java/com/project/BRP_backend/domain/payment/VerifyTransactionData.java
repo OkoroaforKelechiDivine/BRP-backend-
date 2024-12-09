@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class VerifyTransactionData {
     private long id;
     private String domain;
@@ -26,22 +27,24 @@ public class VerifyTransactionData {
     private String currency;
     @JsonAlias(value = "ip_address")
     private String ipAddress;
+   /*
     private String metadata;
     private int fees;
     private String feesSplit;
-    private VerifyTransactionAuthorization authorization;
+   */
+   private VerifyTransactionAuthorization authorization;
     private VerifyPaymentCustomer customer;
-    private String plan;
-    private Object split;
+   // private String plan;
+   // private Object split;
     private String orderId;
     private int requestedAmount;
-    private String posTransactionData;
-    private String source;
-    private String feesBreakdown;
-    private String connect;
+   // private String posTransactionData;
+   // private String source;
+   // private String feesBreakdown;
+   // private String connect;
     private String transactionDate;
-    private Object planObject;
-    private Object subAccount;
+   // private Object planObject;
+   // private Object subAccount;
 
 
 }
