@@ -171,19 +171,26 @@ public class PaymentService {
                     .build();
             HttpResponse<String> response  = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             VerifyTransactionResponse verifyTransactionResponse = objectMapper.convertValue(response, VerifyTransactionResponse.class);
-            data = verifyTransactionResponse.getData();
-            if (data.getStatus().equals("success")) {
-                var appUser = userRepository.findByEmail(user.getUsername());
-                payment.setPaymentStatus(PaymentStatus.SUCCESS);
-                UserEvent userEvent = new UserEvent(appUser, EventType.PAYMENT_SUCCESS,Map.of("payment_id", paymentId));
-                eventPublisher.publishEvent(userEvent);
-            } else if (data.getStatus().equals("failed")) {
-                var appUser = userRepository.findByEmail(user.getUsername());
-                payment.setPaymentStatus(PaymentStatus.FAILED);
-                UserEvent userEvent = new UserEvent(appUser, EventType.PAYMENT_FAILED,Map.of("payment_id", paymentId));
-                eventPublisher.publishEvent(userEvent);
+            if (response.statusCode() == 200) {
+                data = verifyTransactionResponse.getData();
+                if (data.getStatus().equals("success")) {
+                    var appUser = userRepository.findByEmail(user.getUsername());
+                    payment.setPaymentStatus(PaymentStatus.SUCCESS);
+                    UserEvent userEvent = new UserEvent(appUser, EventType.PAYMENT_SUCCESS,Map.of("payment_id", paymentId));
+                    paymentRepository.save(payment);
+                    eventPublisher.publishEvent(userEvent);
+                } else if (data.getStatus().equals("failed")) {
+                    var appUser = userRepository.findByEmail(user.getUsername());
+                    payment.setPaymentStatus(PaymentStatus.FAILED);
+                    UserEvent userEvent = new UserEvent(appUser, EventType.PAYMENT_FAILED,Map.of("payment_id", paymentId));
+                    paymentRepository.save(payment);
+                    eventPublisher.publishEvent(userEvent);
+                }
+                return new ResponseDetails(LocalDateTime.now(), "Verification", HttpStatus.OK.toString(), Map.of("data", data));
+            } else {
+                return new ResponseDetails(LocalDateTime.now(), "Verification failed "+ verifyTransactionResponse.getMessage(), HttpStatus.BAD_REQUEST.toString(), Map.of());
             }
-            return new ResponseDetails(LocalDateTime.now(), "Verification", HttpStatus.OK.toString(), Map.of("data", data));
+
 
         } catch (URISyntaxException | IOException | InterruptedException | AppException e) {
             if (e instanceof AppException ) {
