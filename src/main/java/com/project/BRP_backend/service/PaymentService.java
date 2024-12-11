@@ -66,8 +66,8 @@ public class PaymentService {
                           UserRepository userRepository,
                           @Qualifier("webApplicationContext") ResourceLoader resourceLoader,
                           @Value("${payment.api.key}") String payment_api_key,
-                          @Value("${server.ssl.key-store-password}") String keyStorePassword,
-                          @Value("${server.ssl.trust-store-password}") String trustStorePassword, ApplicationEventPublisher eventPublisher) throws Exception {
+                          @Value("${ssl.key-store-password}") String keyStorePassword,
+                          @Value("${ssl.trust-store-password}") String trustStorePassword, ApplicationEventPublisher eventPublisher) throws Exception {
         this.paymentRepository = paymentRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;

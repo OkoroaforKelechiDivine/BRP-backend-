@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.net.UnknownHostException;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -17,11 +19,16 @@ public class SMSService {
     private final SMSConfiguration smsConfiguration;
     @Async
     public void sendMessage(String smsMessage, String recipientNo) {
-        Twilio.init(smsConfiguration.getAccount_Sid(),smsConfiguration.getAuth_token());
-        Message message = Message.creator(new PhoneNumber(recipientNo),
-                new PhoneNumber(smsConfiguration.getPhone_Number()),
-                smsMessage)
-                .create();
-        log.info("Sms message sent successfully");
+        try {
+            Twilio.init(smsConfiguration.getAccount_Sid(),smsConfiguration.getAuth_token());
+            Message message = Message.creator(new PhoneNumber(recipientNo),
+                            new PhoneNumber(smsConfiguration.getPhone_Number()),
+                            smsMessage)
+                    .create();
+            log.info("Sms message sent successfully");
+        } catch (Exception e) {
+            log.error("Sms not sent because {}", e.getMessage());
+        }
+
     }
 }

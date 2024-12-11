@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("register")
-    public ResponseDetails createClient(UserRegistrationRequest registrationRequest) {
+    @PostMapping("create")
+    public ResponseDetails createClient(@RequestBody UserRegistrationRequest registrationRequest) {
         return userService.createUser(registrationRequest);
     }
 

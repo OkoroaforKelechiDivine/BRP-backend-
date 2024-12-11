@@ -4,3 +4,4 @@ target
 HELP.md
 /src/main/resources/application-dev.properties
 docker-compose.yaml
+mongodb

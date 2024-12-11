@@ -3,6 +3,7 @@ package com.project.BRP_backend.domain.payment;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
@@ -13,36 +14,39 @@ public class VerifyTransactionData {
     private String domain;
     private String status;
     private String reference;
-    @JsonAlias(value = "receipt_number")
+    @JsonProperty(value = "receipt_number")
     private String receiptNumber;
     private int amount;
     private String message;
-    @JsonAlias(value = "gateway_response")
+    @JsonProperty(value = "gateway_response")
     private String gatewayResponse;
-    @JsonAlias(value = "paid_at")
+    @JsonProperty(value = "paid_at")
     private String paidAt;
-    @JsonAlias(value = "created_at")
+    @JsonProperty(value = "created_at")
     private String createdAt;
     private String channel;
     private String currency;
-    @JsonAlias(value = "ip_address")
+    @JsonProperty(value = "ip_address")
     private String ipAddress;
-   /*
+    private VerifyTransactionAuthorization authorization;
+    private VerifyPaymentCustomer customer;
+    @JsonProperty("order_id")
+    private String orderId;
+    @JsonProperty("requested_amount")
+    private int requestedAmount;
+    @JsonProperty("transaction_date")
+    private String transactionDate;
+    /*
     private String metadata;
     private int fees;
     private String feesSplit;
    */
-   private VerifyTransactionAuthorization authorization;
-    private VerifyPaymentCustomer customer;
-   // private String plan;
-   // private Object split;
-    private String orderId;
-    private int requestedAmount;
-   // private String posTransactionData;
-   // private String source;
-   // private String feesBreakdown;
-   // private String connect;
-    private String transactionDate;
+    // private String plan;
+    // private Object split;
+    // private String posTransactionData;
+    // private String source;
+    // private String feesBreakdown;
+    // private String connect;
    // private Object planObject;
    // private Object subAccount;
 

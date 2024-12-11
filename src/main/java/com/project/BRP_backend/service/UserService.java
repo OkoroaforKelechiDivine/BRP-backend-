@@ -59,7 +59,7 @@ public class UserService {
                 .email(email)
                 .firstName(firstName)
                 .lastName(lastName)
-                .gender(Gender.valueOf(gender.trim().toUpperCase()))
+                .gender(Gender.valueOf(gender.toUpperCase()))
                 .phoneNumber(phoneNumber)
                 .role(Role.valueOf(userType.trim().toUpperCase()))
                 .password(passwordEncoder.encode(password))

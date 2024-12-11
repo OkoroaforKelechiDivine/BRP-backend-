@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.BRP_backend.dto.request.LoginDTO;
 import com.project.BRP_backend.dto.request.ResponseDTO;
 import com.project.BRP_backend.dto.request.UnsuccessfulLogin;
+import com.project.BRP_backend.dto.response.UserResponseDTO;
 import com.project.BRP_backend.exception.AppException;
 import com.project.BRP_backend.repository.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -70,9 +71,19 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         ObjectMapper oMapper = new ObjectMapper();
         String email = ((User) authResult.getPrincipal()).getUsername();
         com.project.BRP_backend.model.user.User appUser = repository.findByEmail(email);
-        ResponseDTO responseDto = new ResponseDTO();
-        responseDto.setUser(appUser);
-        responseDto.setToken(token);
+        ResponseDTO responseDto = ResponseDTO
+                .builder()
+                        .user(UserResponseDTO.builder()
+                                .address(appUser.getAddress())
+                                .email(appUser.getEmail())
+                                .firstName(appUser.getFirstName())
+                                .lastName(appUser.getLastName())
+                                .gender(appUser.getGender().toString())
+                                .isVerified(appUser.getIsVerified())
+                                .phoneNumber(appUser.getPhoneNumber())
+                                .build())
+                .token(token)
+                .build();
         logger.info(token);
 
         response.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");

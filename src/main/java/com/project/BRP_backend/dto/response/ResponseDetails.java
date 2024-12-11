@@ -12,7 +12,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class ResponseDetails {
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy\"T\"hh:mm::ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm::ss")
     private LocalDateTime timestamp;
 
     private String message;
