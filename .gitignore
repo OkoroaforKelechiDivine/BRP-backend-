@@ -2,4 +2,6 @@
 .idea
 target
 HELP.md
-/src/main/resources/application-dev.yaml
+/src/main/resources/application-dev.properties
+docker-compose.yaml
+mongodb

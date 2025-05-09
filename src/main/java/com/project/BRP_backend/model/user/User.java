@@ -1,14 +1,20 @@
 package com.project.BRP_backend.model.user;
 
+import com.project.BRP_backend.domain.product.ProductPurchaseHistory;
 import com.project.BRP_backend.model.constants.Gender;
 import com.project.BRP_backend.model.constants.Role;
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-//@Getter
-//@Data
+import java.util.List;
+
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Document
 public class User{
 
     @Id
@@ -18,15 +24,13 @@ public class User{
 
     private String lastName;
 
-    private Role userType;
-
     private String phoneNumber;
 
     private String email;
 
     private String password;
 
-    private String Address;
+    private String address;
 
     private Gender gender;
 
@@ -34,15 +38,6 @@ public class User{
 
     private Boolean isVerified;
 
-    public String getEmail() {
-        return email;
-    }
+    private List<ProductPurchaseHistory> productPurchaseHistories;
 
-    public String getPassword() {
-        return password;
-    }
-
-    public Role getRole() {
-        return role;
-    }
 }

@@ -18,4 +18,4 @@ FROM eclipse-temurin:21.0.1_12-jre-alpine AS final
 WORKDIR /opt/brp
 EXPOSE 9090
 COPY --from=builder /opt/brp/target/*.jar /opt/brp/*.jar
-ENTRYPOINT ["java", "-jar", "--enable-preview", "/opt/recommendic/*.jar"]
+ENTRYPOINT ["java", "-jar", "--enable-preview", "/opt/brp/*.jar"]
